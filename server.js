@@ -2,21 +2,25 @@ console.log('Iniciando servidor...');
 
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
+const NodeCache = require('node-cache'); // Para caché
 const app = express();
 
+// Opcional: Habilitar CORS si hay problemas de conexión desde GitHub Pages
+const cors = require('cors');
+app.use(cors());
+
 app.use(express.json());
-app.use(express.static('public'));
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
+const cache = new NodeCache({ stdTTL: 3600 }); // Caché por 1 hora
 
 app.post('/generate', async (req, res) => {
+  console.log('Solicitud recibida:', new Date().toISOString());
   const { platform, contentType, tone, targetAge, targetAudience, contentGoal, region, scriptLength, charLength, topic } = req.body;
+  const cacheKey = JSON.stringify({ platform, contentType, tone, targetAge, targetAudience, contentGoal, region, scriptLength, charLength, topic });
 
   if (!platform || !contentType || !topic) {
     return res.status(400).json({
@@ -28,8 +32,14 @@ app.post('/generate', async (req, res) => {
     });
   }
 
+  const cachedResult = cache.get(cacheKey);
+  if (cachedResult) {
+    console.log('Usando caché');
+    return res.json(cachedResult);
+  }
+
   const prompt = `
-    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, expecificamente para video con amplia experiencia escribiendo guiones virales y de impacto. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone || 'neutral'}, dirigido a ${targetAge || '18-24'} años de ${targetAudience || 'público general'} en ${region || 'Global'}, que busque ${contentGoal || 'entretener'}, con una duración de ${scriptLength || '1min'} y aproximadamente ${charLength || '500'} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
+    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, específicamente para video con amplia experiencia escribiendo guiones virales y de impacto. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone || 'neutral'}, dirigido a ${targetAge || '18-24'} años de ${targetAudience || 'público general'} en ${region || 'Global'}, que busque ${contentGoal || 'entretener'}, con una duración de ${scriptLength || '1min'} y aproximadamente ${charLength || '500'} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
 
     1. **Gancho**: Una introducción impactante para captar la atención inmediatamente.
     2. **Presentación del problema**: Describe un problema relevante para mantener el interés.
@@ -45,20 +55,22 @@ app.post('/generate', async (req, res) => {
     Formatea la respuesta como un objeto JSON con las claves: script (con subsecciones gancho, problema, solucion, cta), recommendations, viralityScore, qualityScore, reasons.
   `;
 
+  console.time('Anthropic');
+
   try {
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219',
-      max_tokens: 4000,
+      max_tokens: 500, // Reducido para mejorar rendimiento
       messages: [{ role: 'user', content: prompt }],
     });
+    console.timeEnd('Anthropic');
 
     const generatedText = response.content[0].text;
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No se encontró JSON válido en la respuesta');
-    }
+    if (!jsonMatch) throw new Error('No se encontró JSON válido en la respuesta');
     const result = JSON.parse(jsonMatch[0]);
 
+    cache.set(cacheKey, result);
     res.json(result);
   } catch (error) {
     console.error('Error en generate:', error);
