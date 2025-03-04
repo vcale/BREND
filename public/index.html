@@ -53,17 +53,18 @@
     }
     .action-btn {
       background: rgba(74, 144, 226, 0.1);
-      border: 0px solid #4a90e2;
+      border: none;
       border-radius: 40px;
       padding: 8px 16px;
       margin-right: 10px;
       color: #001f3f;
       font-size: 14px;
+      cursor: pointer;
       transition: all 0.3s ease;
     }
     .action-btn:hover {
       background: #4a90e2;
-      color: #fff;
+      color: #ffffff;
       transform: scale(1.05);
       box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
     }
@@ -116,7 +117,9 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
+    const React = window.React;
     const { useState } = React;
+    const ReactDOM = window.ReactDOM;
     const { Container, Grid, Typography, FormControl, InputLabel, Select, MenuItem, Button, Box, TextField, LinearProgress } = MaterialUI;
     const { jsPDF } = window.jspdf;
 
@@ -371,7 +374,8 @@
       );
     }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
   </script>
 </body>
 </html>
