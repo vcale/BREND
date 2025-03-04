@@ -29,14 +29,14 @@ app.post('/generate', async (req, res) => {
   }
 
   const prompt = `
-    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, expecificamente para video con amplia experiencia escribiendo guiones virales y de impacto.. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone || 'neutral'}, dirigido a ${targetAge || '18-24'} años de ${targetAudience || 'público general'} en ${region || 'Global'}, que busque ${contentGoal || 'entretener'}, con una duración de ${scriptLength || '1min'} y aproximadamente ${charLength || '500'} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
+    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, expecificamente para video con amplia experiencia escribiendo guiones virales y de impacto. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone || 'neutral'}, dirigido a ${targetAge || '18-24'} años de ${targetAudience || 'público general'} en ${region || 'Global'}, que busque ${contentGoal || 'entretener'}, con una duración de ${scriptLength || '1min'} y aproximadamente ${charLength || '500'} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
 
     1. **Gancho**: Una introducción impactante para captar la atención inmediatamente.
     2. **Presentación del problema**: Describe un problema relevante para mantener el interés.
     3. **Solución del problema**: Ofrece una solución clara y atractiva.
-    4. **CTA (Llamado a la acción)**: Una instrucción específica y persuasiva para cerrar.
+    4. **CTA (Llamado a la acción)**: Una instrucción corta, específica y persuasiva para cerrar.
 
-    Asegúrate de que el guión sea detallado, adaptado al tipo de contenido (${contentType}) y optimizado para la plataforma (${platform}), considerando su duración y formato típico. Además, proporciona:
+    Asegúrate de que el guión sea detallado, adaptado al tipo de contenido (${contentType}) y optimizado para la plataforma (${platform}). Además, proporciona:
     - recommendations: 3-5 recomendaciones específicas para mejorar el impacto.
     - viralityScore: puntuación de viralidad (1-10) con explicación.
     - qualityScore: puntuación de calidad (1-10) con explicación.
