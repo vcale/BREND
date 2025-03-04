@@ -259,18 +259,18 @@
                     <InputLabel>Duración</InputLabel>
                     <Select name="scriptLength" value={formData.scriptLength} onChange={handleChange}>
                       {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
-                        <>
+                        <React.Fragment>
                           <MenuItem value="30s">30 segundos</MenuItem>
                           <MenuItem value="45s">45 segundos</MenuItem>
                           <MenuItem value="1min">1 minuto</MenuItem>
-                        </>
+                        </React.Fragment>
                       )}
                       {formData.platform === 'YouTube' && (
-                        <>
+                        <React.Fragment>
                           <MenuItem value="2min">2 minutos</MenuItem>
                           <MenuItem value="5min">5 minutos</MenuItem>
                           <MenuItem value="10min">10 minutos</MenuItem>
-                        </>
+                        </React.Fragment>
                       )}
                     </Select>
                   </FormControl>
