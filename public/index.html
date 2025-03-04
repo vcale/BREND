@@ -125,19 +125,19 @@
                   <InputLabel>Tipo de Contenido</InputLabel>
                   <Select name="contentType" value={formData.contentType} onChange={handleChange}>
                     {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
-                      <>
+                      <React.Fragment>
                         <MenuItem value="video corto">Video Corto</MenuItem>
                         <MenuItem value="reel">Reel</MenuItem>
                         <MenuItem value="video largo">Video Largo</MenuItem>
-                      </>
+                      </React.Fragment>
                     )}
                     {formData.platform === 'YouTube' && (
-                      <>
+                      <React.Fragment>
                         <MenuItem value="video corto">Video Corto</MenuItem>
                         <MenuItem value="video largo">Video Largo</MenuItem>
                         <MenuItem value="documental">Documental</MenuItem>
                         <MenuItem value="tutorial">Tutorial</MenuItem>
-                      </>
+                      </React.Fragment>
                     )}
                   </Select>
                 </FormControl>
@@ -221,17 +221,17 @@
                   <InputLabel>Longitud en Caracteres</InputLabel>
                   <Select name="charLength" value={formData.charLength} onChange={handleChange}>
                     {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
-                      <>
+                      <React.Fragment>
                         <MenuItem value="500">500 caracteres</MenuItem>
                         <MenuItem value="1000">1000 caracteres</MenuItem>
-                      </>
+                      </React.Fragment>
                     )}
                     {formData.platform === 'YouTube' && (
-                      <>
+                      <React.Fragment>
                         <MenuItem value="2000">2000 caracteres</MenuItem>
                         <MenuItem value="4000">4000 caracteres</MenuItem>
                         <MenuItem value="8000">8000 caracteres</MenuItem>
-                      </>
+                      </React.Fragment>
                     )}
                   </Select>
                 </FormControl>
