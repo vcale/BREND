@@ -142,7 +142,7 @@
         }
         setLoading(true);
         setResult(null);
-        const response = await fetch('/generate', {
+        const response = await fetch('https://vcale.github.io/BREND/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
