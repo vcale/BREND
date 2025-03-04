@@ -7,8 +7,14 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public')); // Sirve archivos desde la carpeta public
 
+// Check if API key exists
+if (!process.env.ANTHROPIC_API_KEY) {
+  console.error('Error: ANTHROPIC_API_KEY environment variable is not set');
+  console.log('Please set the ANTHROPIC_API_KEY in the Secrets tab');
+}
+
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY || 'dummy-key-for-initialization',
 });
 
 app.get('/', (req, res) => {
@@ -59,4 +65,7 @@ app.post('/generate', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor iniciado en http://0.0.0.0:${PORT}`);
+  console.log('Para acceder al generador, abre la URL de arriba en tu navegador');
+});
