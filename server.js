@@ -8,26 +8,11 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '', // La clave debe configurarse en Secrets
+  apiKey: process.env.ANTHROPIC_API_KEY || 'YOUR_API_KEY_HERE', // Temporal para pruebas
 });
-
-// Verificar si la API key está configurada
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error('\x1b[31m%s\x1b[0m', '⚠️ ADVERTENCIA: No se ha configurado ANTHROPIC_API_KEY');
-  console.error('\x1b[33m%s\x1b[0m', 'Por favor, configura esta clave en la pestaña de Secrets del repl');
-}
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
-});
-
-// Ruta para verificar el estado del servidor
-app.get('/status', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    apiKeyConfigured: !!process.env.ANTHROPIC_API_KEY,
-    message: 'El servidor está funcionando correctamente'
-  });
 });
 
 app.post('/generate', async (req, res) => {
@@ -61,40 +46,28 @@ app.post('/generate', async (req, res) => {
   `;
 
   try {
-    // Verificar si la API key está configurada
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error('ANTHROPIC_API_KEY no está configurada. Por favor, configúrala en la pestaña de Secrets.');
-    }
-
-    console.log('Generando guión para:', { platform, contentType, topic });
-    
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219',
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     });
 
-    console.log('Respuesta recibida de Claude');
     const generatedText = response.content[0].text;
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error('No se encontró JSON válido en la respuesta de Claude');
+      throw new Error('No se encontró JSON válido en la respuesta');
     }
     const result = JSON.parse(jsonMatch[0]);
 
-    console.log('Guión generado exitosamente');
     res.json(result);
   } catch (error) {
     console.error('Error en generate:', error);
-    const errorMessage = error.message || 'Error desconocido';
-    console.error('Detalles del error:', errorMessage);
-    
     res.status(500).json({
       script: { gancho: "Error al procesar", problema: "", solucion: "", cta: "" },
       recommendations: ["Revisa tu conexión o intenta de nuevo."],
       viralityScore: 0,
       qualityScore: 0,
-      reasons: [`Error: ${errorMessage}`],
+      reasons: [`Error: ${error.message}`],
     });
   }
 });
