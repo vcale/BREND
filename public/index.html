@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,22 +10,18 @@
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body { margin: 0; background: #f5f7fa; font-family: 'Roboto', sans-serif; }
-    .step-container { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: box-shadow 0.3s; }
-    .step-container:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .progress-bar { display: flex; align-items: center; margin-bottom: 20px; }
-    .progress-step { width: 12px; height: 12px; background: #ddd; border-radius: 50%; margin: 0 10px; transition: background 0.3s, transform 0.3s; position: relative; }
-    .progress-step.active { background: #4a90e2; transform: scale(1.2); }
-    .progress-step.completed { background: #6ab0ff; }
-    .progress-line { flex-grow: 1; height: 2px; background: #ddd; }
-    .progress-line.active { background: #4a90e2; }
-    .input-field { border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: #fff; width: 100%; transition: border-color 0.3s; }
-    .input-field:focus { border-color: #4a90e2; outline: none; }
-    .action-btn { background: rgba(74, 144, 226, 0.1); border: 1px solid #4a90e2; border-radius: 20px; padding: 6px 12px; margin-right: 10px; color: #4a90e2; font-size: 12px; transition: background 0.3s; }
+    body { margin: 0; background: #f5f7fa; font-family: 'Roboto', sans-serif; color: #333; }
+    .form-container, .result-container { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: box-shadow 0.3s; }
+    .form-container:hover, .result-container:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .input-field { border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: #fff; width: 100%; transition: border-color 0.3s, box-shadow 0.3s; }
+    .input-field:focus { border-color: #4a90e2; box-shadow: 0 0 5px rgba(74, 144, 226, 0.3); outline: none; }
+    .action-btn { background: rgba(74, 144, 226, 0.1); border: 1px solid #4a90e2; border-radius: 20px; padding: 6px 12px; margin-right: 10px; color: #4a90e2; font-size: 12px; transition: background 0.3s, color 0.3s; }
     .action-btn:hover { background: #4a90e2; color: #fff; }
     .loading-bar { width: 0; height: 4px; background: linear-gradient(90deg, #4a90e2, #6ab0ff); animation: loading 2s infinite; }
     @keyframes loading { 0% { width: 0; } 50% { width: 100%; } 100% { width: 0; } }
     .step-icon { margin-right: 8px; color: #4a90e2; }
+    .main-btn { background: #4a90e2; border-radius: 20px; padding: 10px 20px; color: #fff; font-weight: 500; transition: opacity 0.3s; }
+    .main-btn:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
@@ -37,7 +32,6 @@
     const { jsPDF } = window.jspdf;
 
     function App() {
-      const [step, setStep] = useState(1);
       const [formData, setFormData] = useState({
         platform: '', contentType: '', tone: '', targetAge: '', targetAudience: '',
         contentGoal: '', region: '', scriptLength: '', charLength: '', topic: ''
@@ -49,17 +43,11 @@
         setFormData({ ...formData, [e.target.name]: e.target.value });
       };
 
-      const nextStep = () => {
-        if (step === 1 && !formData.platform) return;
-        if (step === 2 && !formData.contentType) return;
-        if (step === 3 && !formData.tone && !formData.targetAge && !formData.targetAudience && !formData.contentGoal && !formData.region) return;
-        if (step === 4 && !formData.scriptLength && !formData.charLength && !formData.topic) return;
-        setStep(step + 1);
-      };
-
-      const prevStep = () => setStep(step > 1 ? step - 1 : 1);
-
       const handleSubmit = async () => {
+        if (!formData.platform || !formData.contentType || !formData.topic) {
+          alert('Por favor, completa los campos requeridos: Plataforma, Tipo de Contenido y Tema.');
+          return;
+        }
         setLoading(true);
         setResult(null);
         const response = await fetch('/generate', {
@@ -94,69 +82,6 @@
         alert('¡Copiado al portapapeles!');
       };
 
-      const renderPlatformOptions = () => {
-        if (['TikTok', 'Instagram', 'Facebook'].includes(formData.platform)) {
-          return (
-            <div>
-              <MenuItem value="video corto">Video Corto</MenuItem>
-              <MenuItem value="reel">Reel</MenuItem>
-              <MenuItem value="video largo">Video Largo</MenuItem>
-            </div>
-          );
-        } else if (formData.platform === 'YouTube') {
-          return (
-            <div>
-              <MenuItem value="video corto">Video Corto</MenuItem>
-              <MenuItem value="video largo">Video Largo</MenuItem>
-              <MenuItem value="documental">Documental</MenuItem>
-              <MenuItem value="tutorial">Tutorial</MenuItem>
-            </div>
-          );
-        }
-        return null;
-      };
-
-      const renderScriptLengthOptions = () => {
-        if (['TikTok', 'Instagram', 'Facebook'].includes(formData.platform)) {
-          return (
-            <div>
-              <MenuItem value="30s">30 segundos</MenuItem>
-              <MenuItem value="45s">45 segundos</MenuItem>
-              <MenuItem value="1min">1 minuto</MenuItem>
-            </div>
-          );
-        } else if (formData.platform === 'YouTube') {
-          return (
-            <div>
-              <MenuItem value="2min">2 minutos</MenuItem>
-              <MenuItem value="5min">5 minutos</MenuItem>
-              <MenuItem value="10min">10 minutos</MenuItem>
-            </div>
-          );
-        }
-        return null;
-      };
-
-      const renderCharLengthOptions = () => {
-        if (['TikTok', 'Instagram', 'Facebook'].includes(formData.platform)) {
-          return (
-            <div>
-              <MenuItem value="500">500 caracteres</MenuItem>
-              <MenuItem value="1000">1000 caracteres</MenuItem>
-            </div>
-          );
-        } else if (formData.platform === 'YouTube') {
-          return (
-            <div>
-              <MenuItem value="2000">2000 caracteres</MenuItem>
-              <MenuItem value="4000">4000 caracteres</MenuItem>
-              <MenuItem value="8000">8000 caracteres</MenuItem>
-            </div>
-          );
-        }
-        return null;
-      };
-
       return (
         <Container maxWidth="lg" style={{ padding: '20px' }}>
           <Typography variant="h3" align="center" style={{ fontFamily: 'Roboto, sans-serif', fontWeight: 700, color: '#4a90e2', margin: '20px 0' }}>
@@ -164,238 +89,218 @@
           </Typography>
 
           <Grid container spacing={3}>
-            {/* Barra de progreso */}
-            <Grid item xs={12}>
-              <div className="progress-bar">
-                <div className={`progress-step ${step >= 1 ? 'active' : ''} ${step > 1 ? 'completed' : ''}`}>
-                  <span className="step-icon" style={{ fontSize: '16px' }}>📍</span>
-                </div>
-                <div className={`progress-line ${step >= 2 ? 'active' : ''}`} />
-                <div className={`progress-step ${step >= 2 ? 'active' : ''} ${step > 2 ? 'completed' : ''}`}>
-                  <span className="step-icon" style={{ fontSize: '16px' }}>🎥</span>
-                </div>
-                <div className={`progress-line ${step >= 3 ? 'active' : ''}`} />
-                <div className={`progress-step ${step >= 3 ? 'active' : ''} ${step > 3 ? 'completed' : ''}`}>
-                  <span className="step-icon" style={{ fontSize: '16px' }}>🎙️</span>
-                </div>
-                <div className={`progress-line ${step >= 4 ? 'active' : ''}`} />
-                <div className={`progress-step ${step >= 4 ? 'active' : ''} ${step > 4 ? 'completed' : ''}`}>
-                  <span className="step-icon" style={{ fontSize: '16px' }}>📝</span>
-                </div>
-                <div className={`progress-line ${step >= 5 ? 'active' : ''}`} />
-                <div className={`progress-step ${step >= 5 ? 'active' : ''}`}>
-                  <span className="step-icon" style={{ fontSize: '16px' }}>✅</span>
-                </div>
+            {/* Opciones a la izquierda */}
+            <Grid item xs={12} md={4}>
+              <div className="form-container">
+                <Typography variant="h6" gutterBottom style={{ color: '#4a90e2' }}>Configuración</Typography>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Plataforma</InputLabel>
+                  <Select name="platform" value={formData.platform} onChange={handleChange} className="input-field">
+                    <MenuItem value="TikTok">TikTok</MenuItem>
+                    <MenuItem value="Instagram">Instagram</MenuItem>
+                    <MenuItem value="Facebook">Facebook</MenuItem>
+                    <MenuItem value="YouTube">YouTube</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Tipo de Contenido</InputLabel>
+                  <Select name="contentType" value={formData.contentType} onChange={handleChange} className="input-field">
+                    {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
+                      <>
+                        <MenuItem value="video corto">Video Corto</MenuItem>
+                        <MenuItem value="reel">Reel</MenuItem>
+                        <MenuItem value="video largo">Video Largo</MenuItem>
+                      </>
+                    )}
+                    {formData.platform === 'YouTube' && (
+                      <>
+                        <MenuItem value="video corto">Video Corto</MenuItem>
+                        <MenuItem value="video largo">Video Largo</MenuItem>
+                        <MenuItem value="documental">Documental</MenuItem>
+                        <MenuItem value="tutorial">Tutorial</MenuItem>
+                      </>
+                    )}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Tono</InputLabel>
+                  <Select name="tone" value={formData.tone} onChange={handleChange} className="input-field">
+                    <MenuItem value="formal">Formal</MenuItem>
+                    <MenuItem value="informal">Informal</MenuItem>
+                    <MenuItem value="humorístico">Humorístico</MenuItem>
+                    <MenuItem value="educativo">Educativo</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Edad del Público</InputLabel>
+                  <Select name="targetAge" value={formData.targetAge} onChange={handleChange} className="input-field">
+                    <MenuItem value="13-17">13-17</MenuItem>
+                    <MenuItem value="18-24">18-24</MenuItem>
+                    <MenuItem value="25-34">25-34</MenuItem>
+                    <MenuItem value="35-44">35-44</MenuItem>
+                    <MenuItem value="45+">45+</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Público Objetivo</InputLabel>
+                  <Select name="targetAudience" value={formData.targetAudience} onChange={handleChange} className="input-field">
+                    <MenuItem value="estudiantes">Estudiantes</MenuItem>
+                    <MenuItem value="profesionales">Profesionales</MenuItem>
+                    <MenuItem value="padres">Padres</MenuItem>
+                    <MenuItem value="emprendedores">Emprendedores</MenuItem>
+                    <MenuItem value="general">Público General</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Objetivo del Contenido</InputLabel>
+                  <Select name="contentGoal" value={formData.contentGoal} onChange={handleChange} className="input-field">
+                    <MenuItem value="informar">Informar</MenuItem>
+                    <MenuItem value="entretener">Entretener</MenuItem>
+                    <MenuItem value="persuadir">Persuadir</MenuItem>
+                    <MenuItem value="vender">Vender</MenuItem>
+                    <MenuItem value="educar">Educar</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Región (Continente)</InputLabel>
+                  <Select name="region" value={formData.region} onChange={handleChange} className="input-field">
+                    <MenuItem value="Norteamérica">Norteamérica</MenuItem>
+                    <MenuItem value="Sudamérica">Sudamérica</MenuItem>
+                    <MenuItem value="Europa">Europa</MenuItem>
+                    <MenuItem value="Asia">Asia</MenuItem>
+                    <MenuItem value="África">África</MenuItem>
+                    <MenuItem value="Oceanía">Oceanía</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Duración</InputLabel>
+                  <Select name="scriptLength" value={formData.scriptLength} onChange={handleChange} className="input-field">
+                    {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
+                      <>
+                        <MenuItem value="30s">30 segundos</MenuItem>
+                        <MenuItem value="45s">45 segundos</MenuItem>
+                        <MenuItem value="1min">1 minuto</MenuItem>
+                      </>
+                    )}
+                    {formData.platform === 'YouTube' && (
+                      <>
+                        <MenuItem value="2min">2 minutos</MenuItem>
+                        <MenuItem value="5min">5 minutos</MenuItem>
+                        <MenuItem value="10min">10 minutos</MenuItem>
+                      </>
+                    )}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Longitud en Caracteres</InputLabel>
+                  <Select name="charLength" value={formData.charLength} onChange={handleChange} className="input-field">
+                    {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
+                      <>
+                        <MenuItem value="500">500 caracteres</MenuItem>
+                        <MenuItem value="1000">1000 caracteres</MenuItem>
+                      </>
+                    )}
+                    {formData.platform === 'YouTube' && (
+                      <>
+                        <MenuItem value="2000">2000 caracteres</MenuItem>
+                        <MenuItem value="4000">4000 caracteres</MenuItem>
+                        <MenuItem value="8000">8000 caracteres</MenuItem>
+                      </>
+                    )}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    name="topic"
+                    label="Tema del Contenido"
+                    value={formData.topic}
+                    onChange={handleChange}
+                    fullWidth
+                    variant="outlined"
+                    className="input-field"
+                  />
+                </FormControl>
+
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="main-btn"
+                  style={{ marginTop: '20px', width: '100%' }}
+                >
+                  {loading ? 'Generando...' : 'Generar Guión'}
+                </Button>
               </div>
             </Grid>
 
-            {/* Contenido por pasos */}
-            {step === 1 && (
-              <Grid item xs={12} md={6}>
-                <div className="step-container">
-                  <Typography variant="h6" gutterBottom>Paso 1: Elige la Plataforma</Typography>
-                  <FormControl fullWidth>
-                    <InputLabel>Plataforma</InputLabel>
-                    <Select name="platform" value={formData.platform} onChange={handleChange} className="input-field">
-                      <MenuItem value="TikTok">TikTok</MenuItem>
-                      <MenuItem value="Instagram">Instagram</MenuItem>
-                      <MenuItem value="Facebook">Facebook</MenuItem>
-                      <MenuItem value="YouTube">YouTube</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <Button variant="contained" onClick={nextStep} style={{ marginTop: '16px', background: '#4a90e2', borderRadius: '20px', padding: '8px 16px' }}>
-                    Siguiente
-                  </Button>
-                </div>
-              </Grid>
-            )}
-
-            {step === 2 && (
-              <Grid item xs={12} md={6}>
-                <div className="step-container">
-                  <Typography variant="h6" gutterBottom>Paso 2: Tipo de Contenido</Typography>
-                  <FormControl fullWidth>
-                    <InputLabel>Tipo de Contenido</InputLabel>
-                    <Select name="contentType" value={formData.contentType} onChange={handleChange} className="input-field">
-                      {renderPlatformOptions()}
-                    </Select>
-                  </FormControl>
-                  <Box mt={2}>
-                    <Button variant="contained" onClick={prevStep} style={{ marginRight: '8px', background: '#4a90e2', borderRadius: '20px', padding: '8px 16px' }}>
-                      Anterior
-                    </Button>
-                    <Button variant="contained" onClick={nextStep} style={{ background: '#4a90e2', borderRadius: '20px', padding: '8px 16px' }}>
-                      Siguiente
-                    </Button>
-                  </Box>
-                </div>
-              </Grid>
-            )}
-
-            {step === 3 && (
-              <Grid item xs={12} md={6}>
-                <div className="step-container">
-                  <Typography variant="h6" gutterBottom>Paso 3: Detalles</Typography>
-                  <FormControl fullWidth>
-                    <InputLabel>Tono</InputLabel>
-                    <Select name="tone" value={formData.tone} onChange={handleChange} className="input-field">
-                      <MenuItem value="formal">Formal</MenuItem>
-                      <MenuItem value="informal">Informal</MenuItem>
-                      <MenuItem value="humorístico">Humorístico</MenuItem>
-                      <MenuItem value="educativo">Educativo</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth style={{ marginTop: '16px' }}>
-                    <InputLabel>Edad del Público</InputLabel>
-                    <Select name="targetAge" value={formData.targetAge} onChange={handleChange} className="input-field">
-                      <MenuItem value="13-17">13-17</MenuItem>
-                      <MenuItem value="18-24">18-24</MenuItem>
-                      <MenuItem value="25-34">25-34</MenuItem>
-                      <MenuItem value="35-44">35-44</MenuItem>
-                      <MenuItem value="45+">45+</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth style={{ marginTop: '16px' }}>
-                    <InputLabel>Público Objetivo</InputLabel>
-                    <Select name="targetAudience" value={formData.targetAudience} onChange={handleChange} className="input-field">
-                      <MenuItem value="estudiantes">Estudiantes</MenuItem>
-                      <MenuItem value="profesionales">Profesionales</MenuItem>
-                      <MenuItem value="padres">Padres</MenuItem>
-                      <MenuItem value="emprendedores">Emprendedores</MenuItem>
-                      <MenuItem value="general">Público General</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth style={{ marginTop: '16px' }}>
-                    <InputLabel>Objetivo del Contenido</InputLabel>
-                    <Select name="contentGoal" value={formData.contentGoal} onChange={handleChange} className="input-field">
-                      <MenuItem value="informar">Informar</MenuItem>
-                      <MenuItem value="entretener">Entretener</MenuItem>
-                      <MenuItem value="persuadir">Persuadir</MenuItem>
-                      <MenuItem value="vender">Vender</MenuItem>
-                      <MenuItem value="educar">Educar</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth style={{ marginTop: '16px' }}>
-                    <InputLabel>Región (Continente)</InputLabel>
-                    <Select name="region" value={formData.region} onChange={handleChange} className="input-field">
-                      <MenuItem value="Norteamérica">Norteamérica</MenuItem>
-                      <MenuItem value="Sudamérica">Sudamérica</MenuItem>
-                      <MenuItem value="Europa">Europa</MenuItem>
-                      <MenuItem value="Asia">Asia</MenuItem>
-                      <MenuItem value="África">África</MenuItem>
-                      <MenuItem value="Oceanía">Oceanía</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <Box mt={2}>
-                    <Button variant="contained" onClick={prevStep} style={{ marginRight: '8px', background: '#4a90e2', borderRadius: '20px', padding: '8px 16px' }}>
-                      Anterior
-                    </Button>
-                    <Button variant="contained" onClick={nextStep} style={{ background: '#4a90e2', borderRadius: '20px', padding: '8px 16px' }}>
-                      Siguiente
-                    </Button>
-                  </Box>
-                </div>
-              </Grid>
-            )}
-
-            {step === 4 && (
-              <Grid item xs={12} md={6}>
-                <div className="step-container">
-                  <Typography variant="h6" gutterBottom>Paso 4: Configuración Final</Typography>
-                  <FormControl fullWidth>
-                    <InputLabel>Duración</InputLabel>
-                    <Select name="scriptLength" value={formData.scriptLength} onChange={handleChange} className="input-field">
-                      {renderScriptLengthOptions()}
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth style={{ marginTop: '16px' }}>
-                    <InputLabel>Longitud en Caracteres</InputLabel>
-                    <Select name="charLength" value={formData.charLength} onChange={handleChange} className="input-field">
-                      {renderCharLengthOptions()}
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth style={{ marginTop: '16px' }}>
-                    <TextField
-                      name="topic"
-                      label="Tema del Contenido"
-                      value={formData.topic}
-                      onChange={handleChange}
-                      fullWidth
-                      variant="outlined"
-                      className="input-field"
-                    />
-                  </FormControl>
-                  <Box mt={2}>
-                    <Button variant="contained" onClick={prevStep} style={{ marginRight: '8px', background: '#4a90e2', borderRadius: '20px', padding: '8px 16px' }}>
-                      Anterior
-                    </Button>
-                    <Button variant="contained" onClick={handleSubmit} disabled={loading} style={{ background: '#4a90e2', borderRadius: '20px', padding: '8px 16px' }}>
-                      {loading ? 'Generando...' : 'Generar'}
-                    </Button>
-                  </Box>
-                </div>
-              </Grid>
-            )}
-
-            {step === 5 && (
-              <Grid item xs={12} md={6}>
-                <div className="step-container">
-                  <Typography variant="h6">Resultado</Typography>
-                  {loading ? (
-                    <Box textAlign="center" mt={10}>
-                      <div className="loading-bar" />
-                      <Typography variant="h6" mt={2} style={{ fontWeight: 'bold' }}>
-                        Procesando tu guión...
-                      </Typography>
-                    </Box>
-                  ) : result ? (
-                    <Box>
-                      <Typography variant="h6">Guión</Typography>
-                      <Typography><strong>Gancho:</strong> {result.script.gancho}</Typography>
-                      <Typography><strong>Problema:</strong> {result.script.problema}</Typography>
-                      <Typography><strong>Solución:</strong> {result.script.solucion}</Typography>
-                      <Typography><strong>CTA:</strong> {result.script.cta}</Typography>
-
-                      <Typography variant="h6" mt={2}>Recomendaciones</Typography>
-                      <ul>{result.recommendations.map((rec, i) => <li key={i}>{rec}</li>)}</ul>
-
-                      <Typography variant="h6" mt={2}>Evaluación</Typography>
-                      <Typography>Viralidad: {result.viralityScore}/10</Typography>
-                      <Typography>Calidad: {result.qualityScore}/10</Typography>
-
-                      <Typography variant="h6" mt={2}>Razones</Typography>
-                      <ul>{result.reasons.map((reason, i) => <li key={i}>{reason}</li>)}</ul>
-
-                      <Box mt={2}>
-                        <Button className="action-btn" onClick={exportToPDF}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" strokeWidth="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                          </svg>
-                          PDF
-                        </Button>
-                        <Button className="action-btn" onClick={copyToClipboard}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" strokeWidth="2">
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                          </svg>
-                          Copiar
-                        </Button>
-                      </Box>
-                    </Box>
-                  ) : (
-                    <Typography variant="body1" mt={10} textAlign="center">
-                      Completa los pasos para generar tu guión.
+            {/* Resultado a la derecha */}
+            <Grid item xs={12} md={8}>
+              <div className="result-container">
+                <Typography variant="h6" gutterBottom style={{ color: '#4a90e2' }}>Resultado</Typography>
+                {loading ? (
+                  <Box textAlign="center" mt={10}>
+                    <div className="loading-bar" />
+                    <Typography variant="h6" mt={2} style={{ fontWeight: 'bold', color: '#4a90e2' }}>
+                      Procesando tu guión...
                     </Typography>
-                  )}
-                </div>
-              </Grid>
-            )}
+                  </Box>
+                ) : result ? (
+                  <Box>
+                    <Typography variant="h6">Guión</Typography>
+                    <Typography><strong>Gancho:</strong> {result.script.gancho}</Typography>
+                    <Typography><strong>Problema:</strong> {result.script.problema}</Typography>
+                    <Typography><strong>Solución:</strong> {result.script.solucion}</Typography>
+                    <Typography><strong>CTA:</strong> {result.script.cta}</Typography>
+
+                    <Typography variant="h6" mt={2}>Recomendaciones</Typography>
+                    <ul>{result.recommendations.map((rec, i) => <li key={i}>{rec}</li>)}</ul>
+
+                    <Typography variant="h6" mt={2}>Evaluación</Typography>
+                    <Typography>Viralidad: {result.viralityScore}/10</Typography>
+                    <Typography>Calidad: {result.qualityScore}/10</Typography>
+
+                    <Typography variant="h6" mt={2}>Razones</Typography>
+                    <ul>{result.reasons.map((reason, i) => <li key={i}>{reason}</li>)}</ul>
+
+                    <Box mt={2}>
+                      <Button className="action-btn" onClick={exportToPDF}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                        </svg>
+                        PDF
+                      </Button>
+                      <Button className="action-btn" onClick={copyToClipboard}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                          <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                        </svg>
+                        Copiar
+                      </Button>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Typography variant="body1" mt={10} textAlign="center" color="#666">
+                    Completa los datos a la izquierda para generar tu guión.
+                  </Typography>
+                )}
+              </div>
+            </Grid>
           </Grid>
         </Container>
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>
