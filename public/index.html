@@ -1,145 +1,228 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generador de Guiones</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@mui/material@5.15.10/umd/material-ui.development.js"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@mui/material@5.15.10/umd/material-ui.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+  <style>
+    body { margin: 0; font-family: 'Roboto', sans-serif; }
+    .container { padding: 20px; }
+    .form-field { margin-bottom: 15px; }
+    .results { margin-top: 30px; padding: 20px; background-color: #f5f5f5; border-radius: 4px; }
+  </style>
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
-    const { useState } = React;
-    const { Container, Typography, FormControl, InputLabel, Select, MenuItem, Button, Box, CircularProgress } = MaterialUI;
+    const { 
+      Button, TextField, Container, Box, Typography, 
+      FormControl, InputLabel, Select, MenuItem, 
+      CircularProgress, Paper 
+    } = MaterialUI;
 
     function App() {
-      const [formData, setFormData] = useState({
-        contentType: '', platform: '', tone: '', targetAge: '', targetAudience: '',
-        contentGoal: '', region: '', scriptLength: '', additionalInfo: ''
+      const [formData, setFormData] = React.useState({
+        contentType: 'video',
+        platform: 'TikTok',
+        tone: 'humorístico',
+        targetAge: '18-25',
+        targetAudience: 'jóvenes interesados en tecnología',
+        contentGoal: 'entretener y educar',
+        region: 'España',
+        scriptLength: 'medio (1-2 minutos)',
+        additionalInfo: '',
       });
-      const [result, setResult] = useState(null);
-      const [loading, setLoading] = useState(false);
+      
+      const [loading, setLoading] = React.useState(false);
+      const [result, setResult] = React.useState(null);
 
       const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
       };
 
-      const handleSubmit = async () => {
+      const handleSubmit = async (e) => {
+        e.preventDefault();
         setLoading(true);
-        const response = await fetch('/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        const data = await response.json();
-        setResult(data);
-        setLoading(false);
+        try {
+          const response = await fetch('/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+          });
+          const data = await response.json();
+          setResult(data);
+        } catch (error) {
+          console.error('Error:', error);
+        } finally {
+          setLoading(false);
+        }
       };
 
       return (
-        <Container maxWidth="sm" style={{ padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '10px' }}>
-          <Typography variant="h4" gutterBottom style={{ color: '#1976d2' }}>
-            Generador de Guiones
-          </Typography>
+        <Container maxWidth="md">
+          <Box my={4}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              Generador de Guiones para Contenido
+            </Typography>
+            
+            <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+              <form onSubmit={handleSubmit}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Tipo de Contenido</InputLabel>
+                  <Select
+                    name="contentType"
+                    value={formData.contentType}
+                    onChange={handleChange}
+                    label="Tipo de Contenido"
+                  >
+                    <MenuItem value="video">Video</MenuItem>
+                    <MenuItem value="reel">Reel</MenuItem>
+                    <MenuItem value="storie">Storie</MenuItem>
+                    <MenuItem value="podcast">Podcast</MenuItem>
+                  </Select>
+                </FormControl>
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Tipo de Contenido</InputLabel>
-            <Select name="contentType" value={formData.contentType} onChange={handleChange}>
-              <MenuItem value="video">Video</MenuItem>
-              <MenuItem value="artículo">Artículo</MenuItem>
-              <MenuItem value="podcast">Podcast</MenuItem>
-            </Select>
-          </FormControl>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Plataforma</InputLabel>
+                  <Select
+                    name="platform"
+                    value={formData.platform}
+                    onChange={handleChange}
+                    label="Plataforma"
+                  >
+                    <MenuItem value="TikTok">TikTok</MenuItem>
+                    <MenuItem value="Instagram">Instagram</MenuItem>
+                    <MenuItem value="YouTube">YouTube</MenuItem>
+                    <MenuItem value="Twitch">Twitch</MenuItem>
+                  </Select>
+                </FormControl>
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Plataforma</InputLabel>
-            <Select name="platform" value={formData.platform} onChange={handleChange}>
-              <MenuItem value="YouTube">YouTube</MenuItem>
-              <MenuItem value="TikTok">TikTok</MenuItem>
-              <MenuItem value="Blog">Blog</MenuItem>
-            </Select>
-          </FormControl>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Tono</InputLabel>
+                  <Select
+                    name="tone"
+                    value={formData.tone}
+                    onChange={handleChange}
+                    label="Tono"
+                  >
+                    <MenuItem value="humorístico">Humorístico</MenuItem>
+                    <MenuItem value="informativo">Informativo</MenuItem>
+                    <MenuItem value="inspirador">Inspirador</MenuItem>
+                    <MenuItem value="educativo">Educativo</MenuItem>
+                  </Select>
+                </FormControl>
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Tono</InputLabel>
-            <Select name="tone" value={formData.tone} onChange={handleChange}>
-              <MenuItem value="formal">Formal</MenuItem>
-              <MenuItem value="informal">Informal</MenuItem>
-              <MenuItem value="humorístico">Humorístico</MenuItem>
-            </Select>
-          </FormControl>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Edad Objetivo"
+                  name="targetAge"
+                  value={formData.targetAge}
+                  onChange={handleChange}
+                />
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Edad del Público</InputLabel>
-            <Select name="targetAge" value={formData.targetAge} onChange={handleChange}>
-              <MenuItem value="18-24">18-24</MenuItem>
-              <MenuItem value="25-34">25-34</MenuItem>
-              <MenuItem value="35-44">35-44</MenuItem>
-            </Select>
-          </FormControl>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Audiencia Objetivo"
+                  name="targetAudience"
+                  value={formData.targetAudience}
+                  onChange={handleChange}
+                />
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Público Objetivo</InputLabel>
-            <Select name="targetAudience" value={formData.targetAudience} onChange={handleChange}>
-              <MenuItem value="estudiantes">Estudiantes</MenuItem>
-              <MenuItem value="profesionales">Profesionales</MenuItem>
-              <MenuItem value="padres">Padres</MenuItem>
-            </Select>
-          </FormControl>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Objetivo del Contenido"
+                  name="contentGoal"
+                  value={formData.contentGoal}
+                  onChange={handleChange}
+                />
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Objetivo del Contenido</InputLabel>
-            <Select name="contentGoal" value={formData.contentGoal} onChange={handleChange}>
-              <MenuItem value="informar">Informar</MenuItem>
-              <MenuItem value="entretener">Entretener</MenuItem>
-              <MenuItem value="persuadir">Persuadir</MenuItem>
-            </Select>
-          </FormControl>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Región"
+                  name="region"
+                  value={formData.region}
+                  onChange={handleChange}
+                />
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Región</InputLabel>
-            <Select name="region" value={formData.region} onChange={handleChange}>
-              <MenuItem value="México">México</MenuItem>
-              <MenuItem value="España">España</MenuItem>
-              <MenuItem value="Colombia">Colombia</MenuItem>
-            </Select>
-          </FormControl>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Longitud del Guión</InputLabel>
+                  <Select
+                    name="scriptLength"
+                    value={formData.scriptLength}
+                    onChange={handleChange}
+                    label="Longitud del Guión"
+                  >
+                    <MenuItem value="corto (30-60 segundos)">Corto (30-60 segundos)</MenuItem>
+                    <MenuItem value="medio (1-2 minutos)">Medio (1-2 minutos)</MenuItem>
+                    <MenuItem value="largo (2-5 minutos)">Largo (2-5 minutos)</MenuItem>
+                  </Select>
+                </FormControl>
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Longitud del Guión</InputLabel>
-            <Select name="scriptLength" value={formData.scriptLength} onChange={handleChange}>
-              <MenuItem value="corto">Corto (2 min)</MenuItem>
-              <MenuItem value="medio">Medio (5 min)</MenuItem>
-              <MenuItem value="largo">Largo (10 min)</MenuItem>
-            </Select>
-          </FormControl>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Información Adicional (opcional)"
+                  name="additionalInfo"
+                  multiline
+                  rows={4}
+                  value={formData.additionalInfo}
+                  onChange={handleChange}
+                />
 
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={loading}
-            style={{ marginTop: '20px', backgroundColor: '#1976d2' }}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Generar Contenido'}
-          </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  size="large"
+                  disabled={loading}
+                  sx={{ mt: 3 }}
+                >
+                  {loading ? <CircularProgress size={24} /> : "Generar Guión"}
+                </Button>
+              </form>
+            </Paper>
 
-          {result && (
-            <Box mt={4} p={2} style={{ backgroundColor: '#fff', borderRadius: '8px' }}>
-              <Typography variant="h6">Guión Generado</Typography>
-              <Typography>{result.script}</Typography>
-              <Typography variant="h6">Recomendaciones</Typography>
-              <ul>{result.recommendations.map((rec, i) => <li key={i}>{rec}</li>)}</ul>
-              <Typography variant="h6">Evaluación</Typography>
-              <Typography>Viralidad: {result.viralityScore}/10</Typography>
-              <Typography>Calidad: {result.qualityScore}/10</Typography>
-              <Typography variant="h6">Razones</Typography>
-              <ul>{result.reasons.map((reason, i) => <li key={i}>{reason}</li>)}</ul>
-            </Box>
-          )}
+            {result && (
+              <Box mt={4} p={3} bgcolor="#f8f9fa" borderRadius={2}>
+                <Typography variant="h5">Guión Generado</Typography>
+                <Typography
+                  component="pre"
+                  sx={{
+                    whiteSpace: "pre-wrap",
+                    backgroundColor: "#eaeaea",
+                    p: 2,
+                    borderRadius: 1,
+                    my: 2
+                  }}
+                >
+                  {result.script}
+                </Typography>
+                <Typography variant="h6">Recomendaciones</Typography>
+                <ul>{result.recommendations.map((rec, i) => <li key={i}>{rec}</li>)}</ul>
+                <Typography variant="h6">Evaluación</Typography>
+                <Typography>Viralidad: {result.viralityScore}/10</Typography>
+                <Typography>Calidad: {result.qualityScore}/10</Typography>
+                <Typography variant="h6">Razones</Typography>
+                <ul>{result.reasons.map((reason, i) => <li key={i}>{reason}</li>)}</ul>
+              </Box>
+            )}
+          </Box>
         </Container>
       );
     }
