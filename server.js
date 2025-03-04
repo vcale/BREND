@@ -5,33 +5,34 @@ const Anthropic = require('@anthropic-ai/sdk');
 const app = express();
 
 app.use(express.json());
-app.use(express.static('public')); // Sirve archivos desde la carpeta public
-
-// Check if API key exists
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error('Error: ANTHROPIC_API_KEY environment variable is not set');
-  console.log('Please set the ANTHROPIC_API_KEY in the Secrets tab');
-}
+app.use(express.static('public'));
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || 'dummy-key-for-initialization',
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html'); // Sirve el frontend
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 app.post('/generate', async (req, res) => {
-  const { contentType, platform, tone, targetAge, targetAudience, contentGoal, region, scriptLength, additionalInfo } = req.body;
+  const { platform, contentType, tone, targetAge, targetAudience, contentGoal, region, scriptLength, charLength, topic } = req.body;
 
   const prompt = `
-    Genera un objeto JSON válido y completo con:
-    - script: un guión detallado para un ${contentType} en ${platform}, con tono ${tone}, dirigido a ${targetAge} años de ${targetAudience} en ${region}, que busque ${contentGoal}, longitud ${scriptLength}. Usa ${additionalInfo || "sin información adicional"} como contexto.
-    - recommendations: 3-5 recomendaciones para mejorar el impacto.
+    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, expecificamente para video con amplia experiencia escribiendo guiones virales y de impacto. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone}, dirigido a ${targetAge} años de ${targetAudience} en ${region}, que busque ${contentGoal}, con una duración de ${scriptLength} y aproximadamente ${charLength} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
+
+    1. **Gancho**: Una introducción impactante para captar la atención inmediatamente.
+    2. **Presentación del problema**: Describe un problema relevante para mantener el interés.
+    3. **Solución del problema**: Ofrece una solución clara y atractiva.
+    4. **CTA (Llamado a la acción)**: Una instrucción específica y persuasiva para cerrar.
+
+    Asegúrate de que el guión sea detallado, adaptado al tipo de contenido (${contentType}) y optimizado para la plataforma (${platform}), considerando su duración y formato típico. Además, proporciona:
+    - recommendations: 3-5 recomendaciones específicas para mejorar el impacto.
     - viralityScore: puntuación de viralidad (1-10) con explicación.
     - qualityScore: puntuación de calidad (1-10) con explicación.
     - reasons: 3-5 razones por las que este contenido funcionará.
-    Asegúrate de cerrar todas las llaves y comillas correctamente.
+
+    Formatea la respuesta como un objeto JSON con las claves: script (con subsecciones gancho, problema, solucion, cta), recommendations, viralityScore, qualityScore, reasons.
   `;
 
   try {
@@ -44,7 +45,7 @@ app.post('/generate', async (req, res) => {
     const generatedText = response.content[0].text;
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     const result = jsonMatch ? JSON.parse(jsonMatch[0]) : {
-      script: "Error al generar el guión.",
+      script: { gancho: "Error", problema: "Error", solucion: "Error", cta: "Error" },
       recommendations: ["Intenta de nuevo."],
       viralityScore: 0,
       qualityScore: 0,
@@ -55,7 +56,7 @@ app.post('/generate', async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({
-      script: "Error al procesar la solicitud.",
+      script: { gancho: "Error al procesar", problema: "", solucion: "", cta: "" },
       recommendations: ["Revisa tu conexión o intenta de nuevo."],
       viralityScore: 0,
       qualityScore: 0,
@@ -65,7 +66,4 @@ app.post('/generate', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor iniciado en http://0.0.0.0:${PORT}`);
-  console.log('Para acceder al generador, abre la URL de arriba en tu navegador');
-});
+app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
