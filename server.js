@@ -2,10 +2,9 @@ console.log('Iniciando servidor...');
 
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
-const NodeCache = require('node-cache'); // Para caché
+const NodeCache = require('node-cache');
 const app = express();
 
-// Opcional: Habilitar CORS si hay problemas de conexión desde GitHub Pages
 const cors = require('cors');
 app.use(cors());
 
@@ -15,7 +14,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const cache = new NodeCache({ stdTTL: 3600 }); // Caché por 1 hora
+const cache = new NodeCache({ stdTTL: 3600 });
 
 app.post('/generate', async (req, res) => {
   console.log('Solicitud recibida:', new Date().toISOString());
@@ -60,7 +59,7 @@ app.post('/generate', async (req, res) => {
   try {
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219',
-      max_tokens: 500, // Reducido para mejorar rendimiento
+      max_tokens: 500,
       messages: [{ role: 'user', content: prompt }],
     });
     console.timeEnd('Anthropic');
@@ -84,5 +83,5 @@ app.post('/generate', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, '0.0.0.0', () => console.log(`Servidor en puerto ${PORT}`));
