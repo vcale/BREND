@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY || 'YOUR_API_KEY_HERE', // Temporal para pruebas
 });
 
 app.get('/', (req, res) => {
@@ -18,8 +18,18 @@ app.get('/', (req, res) => {
 app.post('/generate', async (req, res) => {
   const { platform, contentType, tone, targetAge, targetAudience, contentGoal, region, scriptLength, charLength, topic } = req.body;
 
+  if (!platform || !contentType || !topic) {
+    return res.status(400).json({
+      script: { gancho: "Error", problema: "Error", solucion: "Error", cta: "Error" },
+      recommendations: ["Faltan datos requeridos (plataforma, tipo de contenido o tema)."],
+      viralityScore: 0,
+      qualityScore: 0,
+      reasons: ["Completa todos los campos."],
+    });
+  }
+
   const prompt = `
-    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, expecificamente para video con amplia experiencia escribiendo guiones virales y de impacto. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone}, dirigido a ${targetAge} años de ${targetAudience} en ${region}, que busque ${contentGoal}, con una duración de ${scriptLength} y aproximadamente ${charLength} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
+    Eres un guionista profesional con experiencia en marketing digital. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone || 'neutral'}, dirigido a ${targetAge || '18-24'} años de ${targetAudience || 'público general'} en ${region || 'Global'}, que busque ${contentGoal || 'entretener'}, con una duración de ${scriptLength || '1min'} y aproximadamente ${charLength || '500'} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
 
     1. **Gancho**: Una introducción impactante para captar la atención inmediatamente.
     2. **Presentación del problema**: Describe un problema relevante para mantener el interés.
@@ -44,17 +54,14 @@ app.post('/generate', async (req, res) => {
 
     const generatedText = response.content[0].text;
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
-    const result = jsonMatch ? JSON.parse(jsonMatch[0]) : {
-      script: { gancho: "Error", problema: "Error", solucion: "Error", cta: "Error" },
-      recommendations: ["Intenta de nuevo."],
-      viralityScore: 0,
-      qualityScore: 0,
-      reasons: ["Formato inválido."],
-    };
+    if (!jsonMatch) {
+      throw new Error('No se encontró JSON válido en la respuesta');
+    }
+    const result = JSON.parse(jsonMatch[0]);
 
     res.json(result);
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error en generate:', error);
     res.status(500).json({
       script: { gancho: "Error al procesar", problema: "", solucion: "", cta: "" },
       recommendations: ["Revisa tu conexión o intenta de nuevo."],
