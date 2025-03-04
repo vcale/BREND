@@ -1,12 +1,18 @@
+console.log('Iniciando servidor...');
+
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
 const app = express();
 
 app.use(express.json());
-app.use(express.static('public')); // Para servir el frontend
+app.use(express.static('public')); // Sirve archivos desde la carpeta public
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html'); // Sirve el frontend
 });
 
 app.post('/generate', async (req, res) => {
@@ -52,4 +58,5 @@ app.post('/generate', async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Servidor en puerto 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
