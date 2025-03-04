@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -93,6 +94,69 @@
         alert('¡Copiado al portapapeles!');
       };
 
+      const renderPlatformOptions = () => {
+        if (['TikTok', 'Instagram', 'Facebook'].includes(formData.platform)) {
+          return (
+            <div>
+              <MenuItem value="video corto">Video Corto</MenuItem>
+              <MenuItem value="reel">Reel</MenuItem>
+              <MenuItem value="video largo">Video Largo</MenuItem>
+            </div>
+          );
+        } else if (formData.platform === 'YouTube') {
+          return (
+            <div>
+              <MenuItem value="video corto">Video Corto</MenuItem>
+              <MenuItem value="video largo">Video Largo</MenuItem>
+              <MenuItem value="documental">Documental</MenuItem>
+              <MenuItem value="tutorial">Tutorial</MenuItem>
+            </div>
+          );
+        }
+        return null;
+      };
+
+      const renderScriptLengthOptions = () => {
+        if (['TikTok', 'Instagram', 'Facebook'].includes(formData.platform)) {
+          return (
+            <div>
+              <MenuItem value="30s">30 segundos</MenuItem>
+              <MenuItem value="45s">45 segundos</MenuItem>
+              <MenuItem value="1min">1 minuto</MenuItem>
+            </div>
+          );
+        } else if (formData.platform === 'YouTube') {
+          return (
+            <div>
+              <MenuItem value="2min">2 minutos</MenuItem>
+              <MenuItem value="5min">5 minutos</MenuItem>
+              <MenuItem value="10min">10 minutos</MenuItem>
+            </div>
+          );
+        }
+        return null;
+      };
+
+      const renderCharLengthOptions = () => {
+        if (['TikTok', 'Instagram', 'Facebook'].includes(formData.platform)) {
+          return (
+            <div>
+              <MenuItem value="500">500 caracteres</MenuItem>
+              <MenuItem value="1000">1000 caracteres</MenuItem>
+            </div>
+          );
+        } else if (formData.platform === 'YouTube') {
+          return (
+            <div>
+              <MenuItem value="2000">2000 caracteres</MenuItem>
+              <MenuItem value="4000">4000 caracteres</MenuItem>
+              <MenuItem value="8000">8000 caracteres</MenuItem>
+            </div>
+          );
+        }
+        return null;
+      };
+
       return (
         <Container maxWidth="lg" style={{ padding: '20px' }}>
           <Typography variant="h3" align="center" style={{ fontFamily: 'Roboto, sans-serif', fontWeight: 700, color: '#4a90e2', margin: '20px 0' }}>
@@ -153,21 +217,7 @@
                   <FormControl fullWidth>
                     <InputLabel>Tipo de Contenido</InputLabel>
                     <Select name="contentType" value={formData.contentType} onChange={handleChange} className="input-field">
-                      {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
-                        <>
-                          <MenuItem value="video corto">Video Corto</MenuItem>
-                          <MenuItem value="reel">Reel</MenuItem>
-                          <MenuItem value="video largo">Video Largo</MenuItem>
-                        </>
-                      )}
-                      {formData.platform === 'YouTube' && (
-                        <>
-                          <MenuItem value="video corto">Video Corto</MenuItem>
-                          <MenuItem value="video largo">Video Largo</MenuItem>
-                          <MenuItem value="documental">Documental</MenuItem>
-                          <MenuItem value="tutorial">Tutorial</MenuItem>
-                        </>
-                      )}
+                      {renderPlatformOptions()}
                     </Select>
                   </FormControl>
                   <Box mt={2}>
@@ -255,38 +305,13 @@
                   <FormControl fullWidth>
                     <InputLabel>Duración</InputLabel>
                     <Select name="scriptLength" value={formData.scriptLength} onChange={handleChange} className="input-field">
-                      {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
-                        <>
-                          <MenuItem value="30s">30 segundos</MenuItem>
-                          <MenuItem value="45s">45 segundos</MenuItem>
-                          <MenuItem value="1min">1 minuto</MenuItem>
-                        </>
-                      )}
-                      {formData.platform === 'YouTube' && (
-                        <>
-                          <MenuItem value="2min">2 minutos</MenuItem>
-                          <MenuItem value="5min">5 minutos</MenuItem>
-                          <MenuItem value="10min">10 minutos</MenuItem>
-                        </>
-                      )}
+                      {renderScriptLengthOptions()}
                     </Select>
                   </FormControl>
                   <FormControl fullWidth style={{ marginTop: '16px' }}>
                     <InputLabel>Longitud en Caracteres</InputLabel>
                     <Select name="charLength" value={formData.charLength} onChange={handleChange} className="input-field">
-                      {['TikTok', 'Instagram', 'Facebook'].includes(formData.platform) && (
-                        <>
-                          <MenuItem value="500">500 caracteres</MenuItem>
-                          <MenuItem value="1000">1000 caracteres</MenuItem>
-                        </>
-                      )}
-                      {formData.platform === 'YouTube' && (
-                        <>
-                          <MenuItem value="2000">2000 caracteres</MenuItem>
-                          <MenuItem value="4000">4000 caracteres</MenuItem>
-                          <MenuItem value="8000">8000 caracteres</MenuItem>
-                        </>
-                      )}
+                      {renderCharLengthOptions()}
                     </Select>
                   </FormControl>
                   <FormControl fullWidth style={{ marginTop: '16px' }}>
@@ -343,13 +368,13 @@
 
                       <Box mt={2}>
                         <Button className="action-btn" onClick={exportToPDF}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" strokeWidth="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
                           </svg>
                           PDF
                         </Button>
                         <Button className="action-btn" onClick={copyToClipboard}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" strokeWidth="2">
                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
                           </svg>
@@ -370,7 +395,7 @@
       );
     }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
