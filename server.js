@@ -66,12 +66,4 @@ app.post('/generate', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor iniciado en http://0.0.0.0:${PORT}`);
-  console.log('Para acceder al generador, abre la URL de arriba en tu navegador');
-  
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.error('⚠️ ADVERTENCIA: La variable de entorno ANTHROPIC_API_KEY no está configurada');
-    console.error('Por favor, configura esta clave en la pestaña de Secrets del repl');
-  }
-});
+app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
