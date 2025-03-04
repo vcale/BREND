@@ -29,7 +29,7 @@ app.post('/generate', async (req, res) => {
   }
 
   const prompt = `
-    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, expecificamente para video con amplia experiencia escribiendo guiones virales y de impacto. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone || 'neutral'}, dirigido a ${targetAge || '18-24'} años de ${targetAudience || 'público general'} en ${region || 'Global'}, que busque ${contentGoal || 'entretener'}, con una duración de ${scriptLength || '1min'} y aproximadamente ${charLength || '500'} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
+    Eres un creador de guiones profesional con experiencia en creación de contenido para redes sociales, expecificamente para video con amplia experiencia escribiendo guiones virales y de impacto.. Genera un guión altamente profesional y detallado para un ${contentType} en ${platform}, con tono ${tone || 'neutral'}, dirigido a ${targetAge || '18-24'} años de ${targetAudience || 'público general'} en ${region || 'Global'}, que busque ${contentGoal || 'entretener'}, con una duración de ${scriptLength || '1min'} y aproximadamente ${charLength || '500'} caracteres, sobre el tema "${topic}". Ajusta el contenido según las características culturales y de audiencia de ${region}. El guión debe incluir:
 
     1. **Gancho**: Una introducción impactante para captar la atención inmediatamente.
     2. **Presentación del problema**: Describe un problema relevante para mantener el interés.
