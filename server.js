@@ -101,6 +101,13 @@ app.post('/generate', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor iniciado en http://0.0.0.0:${PORT}`);
-  console.log('BREND - Generador de Guiones está listo para usar');
+  console.log('\x1b[32m%s\x1b[0m', '✅ Servidor iniciado correctamente');
+  console.log('\x1b[36m%s\x1b[0m', `🌐 URL local: http://0.0.0.0:${PORT}`);
+  console.log('\x1b[36m%s\x1b[0m', `🔗 URL de Replit: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+  console.log('\x1b[35m%s\x1b[0m', '🚀 BREND - Generador de Guiones está listo para usar');
+  
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error('\x1b[31m%s\x1b[0m', '⚠️ ADVERTENCIA: La clave API de Anthropic no está configurada');
+    console.error('\x1b[33m%s\x1b[0m', '📝 Configura ANTHROPIC_API_KEY en la pestaña Secrets');
+  }
 });

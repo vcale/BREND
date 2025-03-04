@@ -4,11 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BREND - Generador de Guiones</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@mui/material@5.15.10/umd/material-ui.development.js"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Cargar React y ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Cargar Material UI -->
+  <script crossorigin src="https://unpkg.com/@mui/material@5.15.10/umd/material-ui.production.min.js"></script>
+  <!-- Babel para JSX -->
+  <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <!-- jsPDF para exportar a PDF -->
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body { margin: 0; background: #f5f7fa; font-family: 'Roboto', sans-serif; }
     .step-box { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; transition: box-shadow 0.3s; }
