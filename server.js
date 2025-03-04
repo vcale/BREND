@@ -73,4 +73,7 @@ app.post('/generate', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor iniciado en http://0.0.0.0:${PORT}`);
+  console.log('BREND - Generador de Guiones está listo para usar');
+});
