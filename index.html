@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BREND</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="left-section">
+      <h1>BREND</h1>
+      <p id="rotating-text">Tu historia, nuestro guión</p>
+      <form id="script-form">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <label for="producto">Producto:</label>
+        <input type="text" id="producto" name="producto" required>
+        <label for="caracteristica">Característica principal:</label>
+        <input type="text" id="caracteristica" name="caracteristica" required>
+        <label for="beneficio">Beneficio:</label>
+        <input type="text" id="beneficio" name="beneficio" required>
+        <label for="tipo">Tipo de guión:</label>
+        <select id="tipo" name="tipo">
+          <option value="storytelling">Storytelling</option>
+          <option value="ventas">Ventas</option>
+          <option value="educativo">Educativo</option>
+        </select>
+        <button type="submit">Generar Guión</button>
+      </form>
+    </div>
+    <div class="right-section">
+      <h3>Resultado</h3>
+      <div id="result-container">
+        <p>Completa la información para obtener tu resultado</p>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
