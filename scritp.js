@@ -12,18 +12,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const darkModeBtn = document.getElementById('dark-mode-btn');
   let currentResult = null;
 
-  // Theme toggle
+  // Theme toggle functionality
   lightModeBtn.addEventListener('click', () => {
     document.body.classList.remove('dark-mode');
     lightModeBtn.classList.add('active');
     darkModeBtn.classList.remove('active');
+    localStorage.setItem('theme', 'light'); // Guardar preferencia
   });
 
   darkModeBtn.addEventListener('click', () => {
     document.body.classList.add('dark-mode');
     darkModeBtn.classList.add('active');
     lightModeBtn.classList.remove('active');
+    localStorage.setItem('theme', 'dark'); // Guardar preferencia
   });
+
+  // Cargar tema guardado
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    darkModeBtn.classList.add('active');
+    lightModeBtn.classList.remove('active');
+  } else {
+    document.body.classList.remove('dark-mode');
+    lightModeBtn.classList.add('active');
+    darkModeBtn.classList.remove('active');
+  }
 
   // Form submission
   form.addEventListener('submit', async (e) => {
