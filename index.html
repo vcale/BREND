@@ -3,38 +3,125 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BREND</title>
+  <title>BREND - Generador de Guiones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div class="left-section">
-      <h1>BREND</h1>
-      <p id="rotating-text">Tu historia, nuestro guión</p>
-      <form id="script-form">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
-        <label for="producto">Producto:</label>
-        <input type="text" id="producto" name="producto" required>
-        <label for="caracteristica">Característica principal:</label>
-        <input type="text" id="caracteristica" name="caracteristica" required>
-        <label for="beneficio">Beneficio:</label>
-        <input type="text" id="beneficio" name="beneficio" required>
-        <label for="tipo">Tipo de guión:</label>
-        <select id="tipo" name="tipo">
-          <option value="storytelling">Storytelling</option>
-          <option value="ventas">Ventas</option>
-          <option value="educativo">Educativo</option>
-        </select>
-        <button type="submit">Generar Guión</button>
-      </form>
+  <div class="app">
+    <div class="theme-toggle">
+      <button id="light-mode-btn" class="theme-btn active">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5" />
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+        </svg>
+      </button>
+      <button id="dark-mode-btn" class="theme-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
     </div>
-    <div class="right-section">
-      <h3>Resultado</h3>
-      <div id="result-container">
-        <p>Completa la información para obtener tu resultado</p>
+    <header class="header">
+      <h1 class="title">BREND</h1>
+      <div class="subtitle-container">
+        <span class="subtitle">Crea guiones virales en segundos</span>
+        <span class="subtitle">Impacta a tu audiencia hoy</span>
+        <span class="subtitle">Tu creatividad, nuestro poder</span>
       </div>
-    </div>
+    </header>
+    <main class="main-container">
+      <section class="form-section">
+        <h2>Configura tu guión</h2>
+        <form id="script-form" class="form-column">
+          <div class="form-group">
+            <label for="platform">Plataforma *</label>
+            <select id="platform" name="platform" required>
+              <option value="">Selecciona</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Instagram">Instagram</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Facebook">Facebook</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="contentType">Tipo de Contenido *</label>
+            <select id="contentType" name="contentType" required>
+              <option value="">Selecciona</option>
+              <option value="video corto">Video Corto</option>
+              <option value="reel">Reel</option>
+              <option value="video largo">Video Largo</option>
+              <option value="tutorial">Tutorial</option>
+              <option value="storytelling">Storytelling</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tone">Tono</label>
+            <select id="tone" name="tone">
+              <option value="">Neutral (predeterminado)</option>
+              <option value="formal">Formal</option>
+              <option value="informal">Informal</option>
+              <option value="humorístico">Humorístico</option>
+              <option value="educativo">Educativo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="targetAge">Edad del Público</label>
+            <input type="text" id="targetAge" name="targetAge" placeholder="18-24 (predeterminado)">
+          </div>
+          <div class="form-group">
+            <label for="targetAudience">Audiencia</label>
+            <input type="text" id="targetAudience" name="targetAudience" placeholder="Público general (predeterminado)">
+          </div>
+          <div class="form-group">
+            <label for="contentGoal">Objetivo</label>
+            <select id="contentGoal" name="contentGoal">
+              <option value="">Entretener (predeterminado)</option>
+              <option value="informar">Informar</option>
+              <option value="persuadir">Persuadir</option>
+              <option value="educar">Educar</option>
+              <option value="vender">Vender</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="region">Región</label>
+            <input type="text" id="region" name="region" placeholder="Global (predeterminado)">
+          </div>
+          <div class="form-group">
+            <label for="scriptLength">Duración</label>
+            <select id="scriptLength" name="scriptLength">
+              <option value="">1 min (predeterminado)</option>
+              <option value="30s">30 segundos</option>
+              <option value="1min">1 minuto</option>
+              <option value="2min">2 minutos</option>
+              <option value="5min">5 minutos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="charLength">Longitud (caracteres)</label>
+            <input type="number" id="charLength" name="charLength" placeholder="500 (predeterminado)" min="100" max="2000">
+          </div>
+          <div class="form-group">
+            <label for="topic">Tema *</label>
+            <input type="text" id="topic" name="topic" placeholder="Ej. Cómo ahorrar dinero" required>
+          </div>
+          <button type="submit" id="generate-btn" class="generate-btn">Generar Guión</button>
+        </form>
+      </section>
+      <section class="result-section">
+        <h2>Tu Guión</h2>
+        <div id="result-content" class="result-box">Llena el formulario para ver tu guión aquí</div>
+        <div id="loading-container" class="loading-container" style="display: none;">
+          <div class="spinner"></div>
+          <p>Generando...</p>
+        </div>
+        <div id="result-actions" class="result-actions" style="display: none;">
+          <button id="export-pdf-btn" class="action-btn">Exportar PDF</button>
+          <button id="copy-btn" class="action-btn">Copiar</button>
+        </div>
+      </section>
+    </main>
   </div>
   <script src="script.js"></script>
 </body>
