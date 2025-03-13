@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('script-form');
   const resultContent = document.getElementById('result-content');
   const loadingContainer = document.getElementById('loading-container');
+  const successMessage = document.getElementById('success-message');
   const generateBtn = document.getElementById('generate-btn');
   const resultActions = document.getElementById('result-actions');
   const exportPdfBtn = document.getElementById('export-pdf-btn');
@@ -13,31 +14,31 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentResult = null;
 
   // Theme toggle functionality
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.body.classList.add('dark-mode');
+      darkModeBtn.classList.add('active');
+      lightModeBtn.classList.remove('active');
+    } else {
+      document.body.classList.remove('dark-mode');
+      lightModeBtn.classList.add('active');
+      darkModeBtn.classList.remove('active');
+    }
+  }
+
   lightModeBtn.addEventListener('click', () => {
-    document.body.classList.remove('dark-mode');
-    lightModeBtn.classList.add('active');
-    darkModeBtn.classList.remove('active');
-    localStorage.setItem('theme', 'light'); // Guardar preferencia
+    applyTheme('light');
+    localStorage.setItem('theme', 'light');
   });
 
   darkModeBtn.addEventListener('click', () => {
-    document.body.classList.add('dark-mode');
-    darkModeBtn.classList.add('active');
-    lightModeBtn.classList.remove('active');
-    localStorage.setItem('theme', 'dark'); // Guardar preferencia
+    applyTheme('dark');
+    localStorage.setItem('theme', 'dark');
   });
 
   // Cargar tema guardado
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-    darkModeBtn.classList.add('active');
-    lightModeBtn.classList.remove('active');
-  } else {
-    document.body.classList.remove('dark-mode');
-    lightModeBtn.classList.add('active');
-    darkModeBtn.classList.remove('active');
-  }
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(savedTheme);
 
   // Form submission
   form.addEventListener('submit', async (e) => {
@@ -54,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resultContent.style.display = 'none';
     loadingContainer.style.display = 'block';
     resultActions.style.display = 'none';
+    successMessage.style.display = 'none';
 
     try {
       const response = await fetch('https://brend-backend.onrender.com/generate', {
@@ -79,13 +81,24 @@ document.addEventListener('DOMContentLoaded', () => {
         <ul>${result.reasons.map(reason => `<li>${reason}</li>`).join('')}</ul>
       `;
       resultContent.style.display = 'block';
+      loadingContainer.style.display = 'none';
+      successMessage.style.display = 'block';
+      successMessage.style.opacity = '1';
+
+      setTimeout(() => {
+        successMessage.style.opacity = '0';
+        setTimeout(() => {
+          successMessage.style.display = 'none';
+        }, 300);
+      }, 2000);
+
       resultActions.style.display = 'flex';
     } catch (error) {
       console.error('Error:', error);
       resultContent.innerHTML = '<p style="color: red;">Error al generar el guión. Intenta de nuevo.</p>';
       resultContent.style.display = 'block';
-    } finally {
       loadingContainer.style.display = 'none';
+    } finally {
       generateBtn.disabled = false;
     }
   });
